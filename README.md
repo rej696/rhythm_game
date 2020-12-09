@@ -2,6 +2,40 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Requirements
+
+### Must
+
+- Components
+    - game
+        - starts the master clock, feeds it to the music engine and the game engine
+    - music
+        - plays 
+    - block factory
+        - create blocks at time intervals
+    - blocks (notes)
+        - move down a rail
+    - block trash can
+        - remove blocks from screen at bottom of rail
+    - target zones
+        - color/noise based on accuracy
+        - scoring system recorded in database
+    - rails
+        - map to a key on the keyboard
+    - score tracker
+        - record scores from target zone
+        - talk to blocks/target zone to get combos/misses
+    - scoreboard
+        - session score log
+        - send data to a back end to a database (late game) intermittently
+
+
+### Should
+
+### Could
+
+### Won't
+
 ## Available Scripts
 
 In the project directory, you can run:

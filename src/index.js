@@ -1,142 +1,138 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import './index.css';
+import { FourTrack } from './backingTrack';
+//index.css is from tictactoe game
+//import './index.css';
+import './blockLayout.css'
+import Blooper from "./backingTrack.js";
+
+// import MusicBox from './synth.js';
 
 
-function Square(props) {
-    return (
-        <button
-            className="square"
-            onClick={props.onClick}
-        >
-            {props.value}
-        </button>
-    );
+class Block extends React.Component {
+    render() {
+        return (
+        <div className="block" style={{top: this.props.value.yPos + 'px'}} /*onKeyPress=""*/ /*onClick={() => {this.update()}}*/>
+            <Blooper note="C" octave="4" waveType="square"/>
+        </div>);
+    }
 }
 
-class Board extends React.Component {
-    renderSquare(i) {
-        return (
-            <Square 
-                value={this.props.squares[i]}
-                onClick={() => this.props.onClick(i)}
-            />
-        );
+class Rail extends React.Component {
+    renderBlocks() {
+        let blockElements = [];
+        for (let i in this.props.value.blocks) {
+            // blockElements.push(<Block value={this.state.blocks[i]} /*id={this.props.id}*//>);
+            blockElements.push(<Block value={this.props.value.blocks[i]} />);
+        }
+        return <div class="rail" style={{left: this.props.value.xPos + 'px'}}> {blockElements} </div>;
     }
 
     render() {
         return (
-            <div>
-                <div className="board-row">
-                {this.renderSquare(0)}
-                {this.renderSquare(1)}
-                {this.renderSquare(2)}
-                </div>
-                <div className="board-row">
-                {this.renderSquare(3)}
-                {this.renderSquare(4)}
-                {this.renderSquare(5)}
-                </div>
-                <div className="board-row">
-                {this.renderSquare(6)}
-                {this.renderSquare(7)}
-                {this.renderSquare(8)}
-                </div>
+            <div className="rail">
+                {this.renderBlocks()}
             </div>
         );
     }
-}
-
-function calculateWinner(squares) {
-    const lines = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-        const [a, b, c] = lines[i];
-        if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-            return squares[a];
-        }
-    }
-    return null;
 }
 
 class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            history: [{
-                squares: Array(9).fill(null),
-            }],
-            stepNumber: 0,
-            xIsNext: true,
+            yPos: props.timer,
+            timerCount: 0,
+            rails: Array(15).fill(null),
+        };
+        this.setUpRails();
+    }
+
+    setUpRails() {
+        let rails = this.state.rails;
+        let railLeft = 60;
+        const railSpace = 40;
+
+        for (let i in rails) {
+            rails[i] = {
+                xPos: railLeft,
+                timer: this.state.timerCount,
+                blocks: Array(4).fill(null),
+            };
+            this.setUpBlocks(rails[i].blocks);
+            railLeft += railSpace;
         }
     }
 
-    handleClick(i) {
-        const history = this.state.history.slice(0, this.state.stepNumber + 1);
-        const current = history[history.length - 1];
-        const squares = current.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
-            return;
+    setUpBlocks(blocks) {
+        let initialYPos = 0;
+        for (let i in blocks) {
+            blocks[i] = this.createBlock(initialYPos);
+            initialYPos += 10;
         }
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
-        this.setState({
-            history: history.concat([{
-                squares: squares,
-            }]),
-            stepNumber: history.length,
-            xIsNext: !this.state.xIsNext,
-        });
     }
 
-    jumpTo(step) {
-        this.setState({
-            stepNumber: step,
-            xIsNext: (step % 2) === 0,
-        });
+    createBlock(initialYPos) {
+        return {yPos: initialYPos, speed: Math.random() * 2 + 1,};
+    }
+
+    tick() {
+        this.setState(state => ({
+            timerCount: state.timerCount + 1,
+        }));
+
+        this.updateRails();
+    }
+
+    updateRails() {
+        let rails = this.state.rails.slice();
+        for (let i in rails) {
+            rails[i].timerCount = this.state.timerCount;
+            rails[i].blocks = this.updateBlocks(rails[i].blocks);
+        }
+        this.setState(state => ({
+            rails: rails,
+        }));
+    }
+
+    updateBlocks(blocks) {
+        for (let i in blocks) {
+            blocks[i].yPos = blocks[i].yPos + blocks[i].speed;
+
+            if (blocks[i].yPos >= 500) {
+                blocks.splice(i, 1)
+            }
+
+        }
+        const randomOfTen = Math.floor(Math.random() * 200);
+        if (randomOfTen === 0) {
+            console.log('created new block');
+            blocks.push(this.createBlock(0));
+        }
+        return blocks;
+    }
+
+    componentDidMount() {
+        this.interval = setInterval(() => this.tick(), 10);
+    }
+
+    componentWillUnmount() {
+        clearInterval(this.interval);
+    }
+
+    renderRails() {
+        let railElements = [];
+        for (let i in this.state.rails) {
+            railElements.push(<Rail key={i} value={this.state.rails[i]} />);
+        }
+        return railElements;
     }
 
     render() {
-        const history = this.state.history;
-        const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
-
-        const moves = history.map((step, move) => {
-            const desc = move ?
-                'Go to move #' + move :
-                'Go to game start';
-            return (
-                <li key={move}>
-                    <button onClick={() => this.jumpTo(move)}>{desc}</button>
-                </li>
-            );
-        });
-
-        let status;
-        if (winner) {
-            status = 'Winner: ' + winner;
-        } else {
-            status = status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
-        }
         return (
             <div className="game">
-                <div className="game-board">
-                <Board
-                    squares={current.squares}
-                    onClick={(i) => this.handleClick(i)}
-                />
-                </div>
-                <div className="game-info">
-                <div>{status}</div>
-                <ol>{moves}</ol>
-                </div>
+                {this.renderRails()}
+                <FourTrack clock={this.state.timerCount}/>
             </div>
         );
     }
@@ -146,5 +142,7 @@ class Game extends React.Component {
 
 ReactDOM.render(
     <Game />,
+    // <Timer />,
+    // <MusicBox />,
     document.getElementById('root')
 );
