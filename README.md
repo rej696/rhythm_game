@@ -9,8 +9,6 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - Components
     - game
         - starts the master clock, feeds it to the music engine and the game engine
-    - music
-        - plays 
     - block factory
         - create blocks at time intervals
     - blocks (notes)
@@ -22,6 +20,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
         - scoring system recorded in database
     - rails
         - map to a key on the keyboard
+    - music track
+        - plays a given note 
     - score tracker
         - record scores from target zone
         - talk to blocks/target zone to get combos/misses
