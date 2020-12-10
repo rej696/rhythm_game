@@ -1,5 +1,14 @@
 html {
     background-color: black;
+    color: lime;
+    font-family: 'Major Mono Display', monospace;
+}
+
+input[type='text'] {
+    font-size: 16px;
+    background-color: black;
+    color: lime;
+    font-family: 'Major Mono Display', monospace;;
 }
 
 .rail {
@@ -9,8 +18,9 @@ html {
 }
 
 button {
+    font-family: 'Major Mono Display', monospace;
     background-color: lime;
-    color: red;
+    color: black;
 }
 
 .block {
@@ -132,6 +142,20 @@ button {
 
 .right input {
     vertical-align: baseline;
+}
+
+.userInput {
+    display: grid;
+    grid-template: 1fr 35px 1fr;
+    gap: 10px;
+}
+
+.userInput input {
+    grid-column: 2;
+}
+
+.userInput label {
+    grid-column: 1;
 }
 
 /* ------------------------------------------------------------------------- */

@@ -1,6 +1,5 @@
 import React from 'react';
 // import ReactDOM from 'react-dom';
-import './index.css';
 
 let audioContext = new (window.AudioContext || window.webkitAudioContext)();
 let oscList = [];
@@ -145,8 +144,6 @@ class Key extends React.Component {
             charCode: charCodeToNote[this.props.note][1]
         }
 
-        this.onKeyDown = this.onKeyDown.bind(this);
-        this.onKeyUp = this.onKeyUp.bind(this);
         this.notePressed = this.notePressed.bind(this);
         this.noteReleased = this.noteReleased.bind(this);
         this.noteClicked = this.noteClicked.bind(this);

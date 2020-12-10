@@ -2,6 +2,10 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Tutorials
+- [Node JS backend tutorial](https://medium.com/weekly-webtips/create-and-deploy-your-first-react-web-app-with-a-node-js-backend-ec622e0328d7)
+- [sqlite node.js tutorial](https://www.computerhope.com/issues/ch002076.htm)
+
 ## Requirements
 
 ### Must
