@@ -5,6 +5,10 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 ## Tutorials
 - [Node JS backend tutorial](https://medium.com/weekly-webtips/create-and-deploy-your-first-react-web-app-with-a-node-js-backend-ec622e0328d7)
 - [sqlite node.js tutorial](https://www.computerhope.com/issues/ch002076.htm)
+- [node.js backend database tutorial](https://developerhowto.com/2018/12/29/build-a-rest-api-with-node-js-and-express-js/)
+- [synth tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth)
+- [key event handler for react](https://www.npmjs.com/package/react-keyboard-event-handler)
+
 
 ## Requirements
 

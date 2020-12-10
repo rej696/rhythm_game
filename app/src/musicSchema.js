@@ -4,7 +4,8 @@ import FourTrack from './backingTrack.js';
 
 export default class Schema {
     constructor(updateRateMS, railHeight, blockSpeed) {
-        const trackClockOffset = - Math.floor(railHeight / (blockSpeed * updateRateMS));
+        const trackClockOffset = - Math.floor(railHeight / (blockSpeed));
+        console.log(trackClockOffset);
         const triggerFreqs = [40, 160, 320, 100];
         this.trackTriggers = [];
         this.blockTriggers = [];
@@ -15,26 +16,11 @@ export default class Schema {
     }
 
     update() {
-        // this.blockClock += 1;
-        // this.trackClock += 1;
         for (let i in this.trackTriggers) {
             this.trackTriggers[i].update();
             this.blockTriggers[i].update();
         }
     }
-
-    render() {
-        // const triggerFreqs = [40, 160, 320, 100];
-        // for (const freq in triggerFreqs) {
-        //     this.trackTriggers.push(this.createTrigger(freq));
-        // }
-
-        return <FourTrack schema={this.trackTriggers} />
-    }
-
-    // createTrigger(clock, freq) {
-    //     return clock % freq === 0;
-    // }
 }
 
 class Trigger {
@@ -46,6 +32,12 @@ class Trigger {
 
     update() {
         this.clock += 1;
-        this.value = this.clock % this.freq === 0;
+        if (this.clock < 0) {
+            this.value = false;
+            console.log('value is false');
+        }
+        else {
+            this.value = (this.clock % this.freq === 0);
+        }
     }
 }

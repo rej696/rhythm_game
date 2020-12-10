@@ -14,7 +14,7 @@ input[type='text'] {
 .rail {
     position: absolute;
     left: 0px;
-    top: 0px;
+    top: 100px;
 }
 
 button {
@@ -28,6 +28,10 @@ button {
     position: relative;
     top: 0px;
     /* animation: nudge 5s linear infinite alternate; */
+}
+
+.targetZone {
+    border: 10px solid green;
 }
 
 @keyframes nudge {
@@ -47,7 +51,7 @@ button {
 /* ------------------------------------------------------------------------- */
 /* Keyboard CSS from MDN tutorial https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth */
 /* ------------------------------------------------------------------------- */
-.container {
+/* .container {
     overflow-x: scroll;
     overflow-y: hidden;
     width: 660px;
@@ -142,11 +146,11 @@ button {
 
 .right input {
     vertical-align: baseline;
-}
+} */
 
 .userInput {
     display: grid;
-    grid-template: 1fr 35px 1fr;
+    grid-template: 1fr 2fr;
     gap: 10px;
 }
 
@@ -156,6 +160,42 @@ button {
 
 .userInput label {
     grid-column: 1;
+}
+
+.gameMenu {
+    display: grid;
+    grid-template: 1fr 2fr;
+    gap: 10px;
+}
+
+.currentScore {
+    grid-column: 1;
+}
+
+.scoreInput {
+    grid-column: 2;
+}
+
+.scoreBoard {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-gap: 10px;
+    grid-template-rows: auto auto;
+    background-color: black;
+    color: lime;
+}
+
+.scoreBoardEntry {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.usernameScoreBoard {
+    grid-column: 1;
+}
+
+.scoreScoreBoard {
+    grid-column: 2;
 }
 
 /* ------------------------------------------------------------------------- */

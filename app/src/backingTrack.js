@@ -160,6 +160,18 @@ class MusicTrack extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        if (this.state.oscListIndex) {
+            oscList[this.state.oscListIndex].stop();
+            oscList[this.state.oscListIndex] = null;
+            this.setState({
+                trig: false,
+                noteOffTime: 0,
+                oscListIndex: null,
+            });
+        }
+    }
+
     render() {
         if (this.props.trig) {
             this.noteOn(
@@ -179,36 +191,13 @@ class MusicTrack extends React.Component {
 
 export class FourTrack extends React.Component {
     render() {
-        // (this.props.clock % 40 === 0) && console.log(this.props.clock);
-
-        let trig1 = false;
-        if (this.props.clock % 40 === 0) {
-            trig1 = true;
-        }
-
-        let trig2 = false;
-        if (this.props.clock % 160 === 0) {
-            trig2 = true;
-        }
-
-        let trig3 = false;
-        if (this.props.clock % 320 === 0) {
-            trig3 = true;
-        }
-
-        let trig4 = false;
-        if (this.props.clock % 100 === 0) {
-            trig4 = true;
-        }
 
         return (
             <div>
                 <MusicTrack 
                     key="track1"
-                    clock={this.props.clock}
-                    // clock={this.props.triggers[0].clock}
-                    // trig={this.props.triggers[0].value}
-                    trig={trig1}
+                    clock={this.props.triggers[0].clock}
+                    trig={this.props.triggers[0].value}
                     gate="20"
                     note="C"
                     octave="4"
@@ -216,20 +205,16 @@ export class FourTrack extends React.Component {
 
                 <MusicTrack 
                     key="track2"
-                    clock={this.props.clock}
-                    trig={trig2}
-                    // clock={this.props.triggers[1].clock}
-                    // trig={this.props.triggers[1].value}
+                    clock={this.props.triggers[1].clock}
+                    trig={this.props.triggers[1].value}
                     gate="30"
                     note="F"
                     octave="4"
                     waveType="sine" />
                 <MusicTrack 
                     key="track3"
-                    clock={this.props.clock}
-                    trig={trig3}
-                    // clock={this.props.triggers[2].clock}
-                    // trig={this.props.triggers[2].value}
+                    clock={this.props.triggers[2].clock}
+                    trig={this.props.triggers[2].value}
                     gate="100"
                     note="G"
                     octave="4"
@@ -237,10 +222,8 @@ export class FourTrack extends React.Component {
                 
                 <MusicTrack 
                     key="track4"
-                    clock={this.props.clock}
-                    trig={trig4}
-                    // clock={this.props.triggers[3].clock}
-                    // trig={this.props.triggers[3].value}
+                    clock={this.props.triggers[3].clock}
+                    trig={this.props.triggers[3].value}
                     gate="20"
                     note="D"
                     octave="3"
