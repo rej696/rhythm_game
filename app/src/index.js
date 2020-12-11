@@ -33,11 +33,17 @@ class Rail extends React.Component {
         return this.props.value.targetZone.getRender();
     }
 
+    renderDispenser() {
+        return this.props.value.dispenser.getRender();
+    }
+
     render() {
         return (
             <div className="rail" style={{left: this.props.value.xPos + 'px'}}>
+                {this.renderDispenser()}
                 {this.renderBlocks()}
                 {this.renderTargetZone()}
+                
             </div>
         );
     }
@@ -84,14 +90,42 @@ class TargetZoneJS {
 
 }
 
+class Dispenser extends React.Component {
+    render() {
+        return (
+            <div>
+                <hr className="dispenser" style={{left: this.props.value.xPos, top: this.props.value.top}} />
+                <hr className="dispenser" style={{left: this.props.value.xPos, top: this.props.value.bottom}} />
+            </div>
+        );
+    }
+
+}
+
+class DispenserJS {
+    constructor(xPos, railHeight) {
+        this.xPos = xPos;
+        this.railHeight = railHeight;
+        this.top = railHeight - 70;
+        this.bottom = railHeight - 30;
+    }
+
+    getRender() {
+        return <Dispenser value={this} />;
+    }
+
+}
+
 class RailJS {
-    constructor(key, xPos, height, blockSpeed) {
+    constructor(key, letter, xPos, height, blockSpeed) {
         this.key = key;
         this.xPos = xPos;
+        this.letter = letter;
         this.blocks = [];
         this.blockSpeed = blockSpeed;
         this.height = height;
         this.targetZone = new TargetZoneJS(xPos, height);
+        this.dispenser = new DispenserJS(xPos, height);
     }
 
     update(createBlock) {
@@ -106,7 +140,7 @@ class RailJS {
             }
         }
         if (createBlock) {
-            this.blocks.push(new BlockJS(150, this.blockSpeed));
+            this.blocks.push(new BlockJS(80, this.blockSpeed));
         }
     }
 
@@ -118,22 +152,31 @@ class RailJS {
 class Game extends React.Component {
     constructor(props) {
         super(props);
-        this.railHeight = 500;
+        this.railHeight = 400;
         this.updateRateMS = 10;
         this.blockSpeed = 4;
+        this.railLetters = ['w', 's', 'd', 'f', 'j', 'k', 'l', ';'];
+        
         this.state = {
             yPos: props.timer,
             timerCount: 0,
-            rails: Array(8).fill(null),
+            rails: [],
+            keyDown: props.keyDown,
+            // rails: Array(8).fill(null),
             schema: new Schema(this.updateRateMS, this.railHeight, this.blockSpeed),
         };
         this.setUpRails();
     }
 
-    getLowestBlockOnRail(railNo) {// letter to press
+    getLowestBlockOnRail(railNo) {
+        // letter to press
+        for (let rail in this.state.rails) {
+            
+        }
         let rail = this.state.rails[railNo];
         let blocksOnRail = this.state.rails[railNo].blocks;
         let lowestBlock = blocksOnRail[0]; // calculate score from block position
+        let lowestBlockPos = lowestBlock.yPos;
         
         //let rail
         // remove block from rail
@@ -144,11 +187,18 @@ class Game extends React.Component {
         let rails = this.state.rails;
         let railLeft = 60;
         const railSpace = 40;
+        // let letters = ['a', 's', 'd', 'f'] 
 
-        for (let i in rails) {
-            rails[i] = new RailJS(i, railLeft, this.railHeight, this.blockSpeed);
+        for (let i in this.railLetters) {
+            let letter = this.railLetters[i];
+            rails[i] = new RailJS(i, letter, railLeft, this.railHeight, this.blockSpeed);
             railLeft += railSpace;
         }
+
+        // for (let i in rails) {
+        //     rails[i] = new RailJS(i, letters[i], railLeft, this.railHeight, this.blockSpeed);
+        //     railLeft += railSpace;
+        // }
     }
 
     tick() {
@@ -195,6 +245,7 @@ class Game extends React.Component {
     componentDidMount() {
         this.interval = setInterval(() => this.tick(), this.updateRateMS);
         window.addEventListener('keydown', this.props.handleKeyDown);
+        window.addEventListener('keyup', this.props.handleKeyUp);
     }
 
     componentWillUnmount() {
@@ -210,6 +261,12 @@ class Game extends React.Component {
     }
 
     render() {
+        // console.log(this.state.keyDown);
+        for (let key in this.state.keyDown) {
+            if (this.state.keyDown[key]) {
+                console.log('key ' + key + ' pressed');
+            }
+        }
         return (
             <div className="game">
                 {this.renderRails()}
@@ -226,10 +283,10 @@ class Page extends React.Component {
         this.state = {
             play: false,
             currentScore: 0,
+            keyDown: {"a": false, "c": false, "d": false, "f": false}
         };
     }
 
-    //
     // let keyboardToRailMap = {
     //     keycodeA : this.state.rails[0],
     //     keycodeS : this.state.rails[1],
@@ -237,28 +294,68 @@ class Page extends React.Component {
     //     keyCodeF : this.state.rails[3],
     // }
     
-    // if (this.state.play === true && ) { 
+    // keyDown(chord) {
+    //     // console.log(chord);
+    //     let keyPressed = this.state.keyPressed;
+    //     keyPressed[chord] = true
+    //     this.setState({keyPressed,})
+    //     console.log(this.state);
     // }
 
-    playNote(chord) {
-        console.log(chord);
+    handleKeyDown = (e) => {
+        let keycode = e.keyCode
+
+        let setKeyDown = (note) => {
+            let keyDown = this.state.keyDown;
+            keyDown[note] = true;
+            this.setState({keyDown,});
+            // console.log("keydown");
+            // console.log(this.state.keyDown);
+        };
+
+        if (this.state.play === true) { 
+            if (keycode === 65) {
+                setKeyDown('a');
+            }
+            if (keycode === 83) {
+                setKeyDown('c');
+            }
+            if (keycode === 68) {
+                setKeyDown('d');
+            }
+            if (keycode === 70) {
+                setKeyDown('f');
+            }
+        }
     }
 
-    handleKeyDown(e) {
-        let keycode = e.keyCode
-        if (keycode === 65) {
-            this.playNote('a');
-        }
-        if (keycode === 83) {
-            this.playNote('c');
-        }
-        if (keycode === 68) {
-            this.playNote('d');
-        }
-        if (keycode === 70) {
-            this.playNote('f');
-        }
-    }
+    handleKeyUp = (e) => {
+        let keycode = e.keyCode;
+        
+        let setKeyUp = (note) => {
+            let keyDown = this.state.keyDown;
+            keyDown[note] = false;
+            this.setState({keyDown,});
+            // console.log("keyup");
+            // console.log(this.state.keyDown);
+        };
+
+        if (this.state.play === true) { 
+            if (keycode === 65) {
+                setKeyUp('a');
+            }
+            if (keycode === 83) {
+                setKeyUp('c');
+            }
+            if (keycode === 68) {
+                setKeyUp('d');
+            }
+            if (keycode === 70) {
+                setKeyUp('f');
+            }
+        }                                        
+    }    
+    
 
     scoreChangeHandler = (event) => {
         this.setState({currentScore: Number(event.target.value),});
@@ -273,7 +370,7 @@ class Page extends React.Component {
     }
 
     render() {
-        console.log(this.state.play);
+        // console.log(this.state.play);
         return (
             <div className="App">
 
@@ -293,9 +390,11 @@ class Page extends React.Component {
                             <input className="scoreInput" type='text' onChange={this.scoreChangeHandler} />
                         </div>
                         <button onMouseDown={this.changeMode}>Go to Scoreboard!</button>
-                        <Game
-                            onKeyDown={(e) => this.handleKeyDown()}
-                            handleKeyDown={this.handleKeyDown}/>
+                        <Game onKeyDown={(e) => this.handleKeyDown()}
+                            handleKeyDown={this.handleKeyDown}
+                            onKeyUp={(e) => this.handleKeyUp()}
+                            handleKeyUp={this.handleKeyUp} 
+                            keyDown={this.state.keyDown}/>
                     </div>
                 }
             </div>

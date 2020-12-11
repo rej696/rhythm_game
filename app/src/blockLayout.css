@@ -32,6 +32,11 @@ button {
 
 .targetZone {
     border: 10px solid green;
+    position: relative;
+}
+
+.dispenser {
+    border: 10px solid green;
 }
 
 @keyframes nudge {
