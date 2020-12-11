@@ -8,6 +8,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 - [node.js backend database tutorial](https://developerhowto.com/2018/12/29/build-a-rest-api-with-node-js-and-express-js/)
 - [synth tutorial](https://developer.mozilla.org/en-US/docs/Web/API/Web_Audio_API/Simple_synth)
 - [key event handler for react](https://www.npmjs.com/package/react-keyboard-event-handler)
+- [install node version manager this app uses 14.15.1](https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-20-04)
 
 
 ## Requirements
