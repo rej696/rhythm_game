@@ -8,10 +8,6 @@ create table if not exists scores (
     score integer not null
 );
 
--- insert into scores (username, score)
--- values 
--- ("rej696", 91),
--- ("handjacobsanitiser", 76),
--- ("avocadobelly", 89),
--- ("unawarewolf", 63),
--- ("bef", 39);
+insert into scores (username, score)
+values 
+("Rupert", -100);
