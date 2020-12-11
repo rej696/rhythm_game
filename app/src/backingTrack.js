@@ -32,10 +32,27 @@ export default class Blooper extends React.Component {
     constructor(props) {
         super(props)
 
+        let note;
+        let letter = this.props.letter;
+        let octave = this.props.octave;
+        
+        if (letter === "a") {
+            note = "C";
+        } else if (letter === "s") {
+            note = "E";
+        } else if (letter === "d") {
+            note = "G";
+        } else if (letter === "f") { 
+            note = "B";
+            octave = 5;
+        } else {
+            note = this.props.note;
+        };
+
         this.state = {
             pressed: false,
-            oscListIndex: this.props.note + this.props.octave,
-            freq: this.getFreq(this.props.note, this.props.octave),
+            oscListIndex: note + octave,
+            freq: this.getFreq(note, octave),
             waveType: this.props.waveType,
         }
 
@@ -82,13 +99,25 @@ export default class Blooper extends React.Component {
         }
     }
 
+    // componentWillUnmount() {
+    //     if (this.state.oscListIndex) {
+    //         oscList[this.state.oscListIndex].stop();
+    //         oscList[this.state.oscListIndex] = null;
+    //         this.setState({
+    //             trig: false,
+    //             noteOffTime: 0,
+    //             oscListIndex: null,
+    //         });
+    //     }
+    // }
+
     render() {
         return (
             <button className="blooper"
                 onMouseDown={this.noteClicked}
                 onMouseUp={this.noteReleased}
                 onMouseLeave={this.noteReleased}
-                >
+                style={{backgroundColor: this.props.color}}>
                 <div>
                     {this.props.letter} {/*.charAt(0).toUpperCase()*/}
                     {/* {this.props.note} */}

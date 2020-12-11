@@ -24,7 +24,7 @@ button {
 }
 
 .block {
-    background-color: green;
+    /* background-color: green; */
     position: absolute;
     /* margin: auto; */
     top: 0px;

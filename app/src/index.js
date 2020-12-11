@@ -2,8 +2,6 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { FourTrack } from './backingTrack';
 import ScoreHandler from './scoreBoard.js';
-//index.css is from tictactoe game
-//import './index.css';
 import './blockLayout.css'
 import Blooper from "./backingTrack.js";
 import Schema from './musicSchema.js';
@@ -15,7 +13,7 @@ class Block extends React.Component {
     render() {
         return (
         <div className="block" style={{top: this.props.value.yPos + 'px', left: this.props.value.left + 'px'}}>
-            <Blooper note="C" octave="4" waveType="square" letter={this.props.value.letter}/>
+            <Blooper note="C" octave="4" waveType="square" letter={this.props.value.letter} color={this.props.value.color} />
         </div>);
     }
 }
@@ -54,10 +52,20 @@ class BlockJS {
         this.speed = speed;
         this.left = railWidth / 2 - 10;
         this.letter = letter;
+        this.color = '#13fc03';
+        this.removeSoon = false;
+        this.removeCount = 15;
+        this.remove = false;
     }
 
     update() {
         this.yPos = this.yPos + this.speed;
+        if (this.removeSoon) {
+            this.removeCount -= 1;
+            if (this.removeCount === 0) {
+                this.remove = true;
+            }
+        }
     }
 
     getRender() {
@@ -166,13 +174,29 @@ class RailJS {
     updateBlocks(createBlock) {
         for (let i in this.blocks) {
             this.blocks[i].update();
-            if (this.blocks[i].yPos >= this.height) {
+            if (this.blocks[i].remove) {
+                this.removeLowestBlock();
+            }
+            else if (this.blocks[i].yPos >= this.height) {
                 this.handleScore(- 1);
                 this.blocks.splice(i, 1);
             }
         }
         if (createBlock) {
             this.blocks.push(new BlockJS(80, this.blockSpeed, this.width, this.letter));
+        }
+    }
+
+    changeBlockColor(lowestBlock) {
+        if (this.blocks.length > 0) {
+            if (this.blockWithinZone(lowestBlock)) {
+                lowestBlock.color = 'blue';
+                lowestBlock.removeSoon = true;
+            }
+            else {
+                lowestBlock.color = 'red';
+                lowestBlock.removeSoon = true;
+            }
         }
     }
 
@@ -185,7 +209,9 @@ class RailJS {
 
         this.handleScore(this.calculateScore(lowestBlock));
 
-        this.removeLowestBlock();
+        this.changeBlockColor(lowestBlock);
+
+        // this.removeLowestBlock();
     }
 
     calculateScore(block) {
@@ -196,6 +222,9 @@ class RailJS {
     }
 
     blockWithinZone(block) {
+        if (block == null) {
+            return false;
+        }
         return block.yPos > this.targetZone.top && block.yPos < this.targetZone.bottom;
     }
 
@@ -232,6 +261,8 @@ class Game extends React.Component {
         this.gameOverBlockCount = 60;
         this.blockCount = 0;
         this.gameOver = false;
+
+        this.sweetspotHeight = this.railHeight - 70;
         
         this.state = {
             yPos: props.timer,
@@ -239,7 +270,7 @@ class Game extends React.Component {
             rails: [],
             // keyDown: props.keyDown,
             // rails: Array(8).fill(null),
-            schema: new Schema(this.updateRateMS, this.railHeight, this.blockSpeed),
+            schema: new Schema(this.updateRateMS, this.sweetspotHeight, this.blockSpeed),
             keyDown: {"a": false, "s": false, "d": false, "f": false, "j": false, "k": false, "l": false, ";": false},
         };
         this.setUpRails();
@@ -260,9 +291,7 @@ class Game extends React.Component {
         const railSpace = 80;
         let railToKeyMap = {};
         for (let i in this.railLetters) {
-            //rail = this.railLetters
             let letter = this.railLetters[i];
-
             rails[i] = new RailJS(i, letter, railLeft, this.railHeight, this.blockSpeed, this.props.handleScore);
             railLeft += railSpace;
         }
@@ -415,11 +444,9 @@ class Game extends React.Component {
 class Page extends React.Component {
     constructor(props) {
         super(props);
-        // this.handleKeyDown = this.handleKeyDown.bind(this);
         this.state = {
             play: false,
             currentScore: 0,
-            // keyDown: {"a": false, "c": false, "d": false, "f": false}
         };
     }
     
@@ -442,7 +469,6 @@ class Page extends React.Component {
     }
 
     render() {
-        // console.log(this.state.play);
         return (
             <div className="App">
 
@@ -462,12 +488,7 @@ class Page extends React.Component {
                             {/* <input className="scoreInput" type='text' onChange={this.scoreChangeHandler} /> */}
                         </div>
                         <button onMouseDown={this.changeMode}>Go to Scoreboard!</button>
-                        <Game /*onKeyDown={(e) => this.handleKeyDown()}
-                            handleKeyDown={this.handleKeyDown}
-                            onKeyUp={(e) => this.handleKeyUp()}
-                            handleKeyUp={this.handleKeyUp} 
-                            keyDown={this.state.keyDown}*/
-                            handleScore={this.handleScore}/>
+                        <Game handleScore={this.handleScore}/>
                     </div>
                 }
             </div>
