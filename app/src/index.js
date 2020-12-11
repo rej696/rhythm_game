@@ -15,7 +15,7 @@ class Block extends React.Component {
     render() {
         return (
         <div className="block" style={{top: this.props.value.yPos + 'px', left: this.props.value.left + 'px'}}>
-            <Blooper note="C" octave="4" waveType="square"/>
+            <Blooper note="C" octave="4" waveType="square" letter={this.props.value.letter}/>
         </div>);
     }
 }
@@ -49,10 +49,11 @@ class Rail extends React.Component {
 }
 
 class BlockJS {
-    constructor(initialYPos, speed, width){
+    constructor(initialYPos, speed, railWidth, letter){
         this.yPos = initialYPos;
         this.speed = speed;
-        this.left = width / 4;
+        this.left = railWidth / 2 - 10;
+        this.letter = letter;
     }
 
     update() {
@@ -81,6 +82,7 @@ class TargetZoneJS {
         this.railHeight = railHeight;
         this.top = railHeight - 100;
         this.bottom = railHeight - 30;
+        this.thickness = 4;
     }
 
     getRender() {
@@ -93,8 +95,14 @@ class Dispenser extends React.Component {
     render() {
         return (
             <div>
-                <hr className="dispenser" style={{top: this.props.value.top + 'px', width: this.props.value.width + 'px'}} />
-                <hr className="dispenser" style={{top: this.props.value.bottom + 'px', width: this.props.value.width + 'px'}} />
+                <hr className="dispenser" style={{top: this.props.value.top + 'px',
+                    width: this.props.value.width + 'px',
+                    left: this.props.value.left + 'px',
+                    height: this.props.value.height + 'px'}} />
+                <hr className="dispenser" style={{top: this.props.value.bottom + 'px',
+                    width: this.props.value.width + 'px',
+                    left: this.props.value.left + 'px',
+                    height: this.props.value.height + 'px'}} />
             </div>
         );
     }
@@ -102,10 +110,32 @@ class Dispenser extends React.Component {
 }
 
 class DispenserJS {
-    constructor() {
-        this.top = 30;
+    constructor(railWidth) {
+        this.railWidth = railWidth;
+        this.top = 14;
         this.bottom = 0;
-        this.width = 10;
+        this.width = 20;
+        this.left = this.calculateLeft;
+        this.height = 6;
+    }
+
+    calculateLeft() {
+        return (this.railWidth / 2) - (this.width / 2);
+    }
+
+    update(blockCount) {
+        if (blockCount === 0) {
+            this.top = 14;
+            this.width = 20;
+            this.height = 6;
+        }
+        else {
+            this.top = 14 * blockCount;
+            this.bottom = this.top - 20;
+            this.height = 10;
+            this.width = 30;
+        }
+        this.left = this.calculateLeft();
     }
 
     getRender() {
@@ -125,11 +155,12 @@ class RailJS {
         this.height = height;
         this.handleScore = handleScore;
         this.targetZone = new TargetZoneJS(height);
-        this.dispenser = new DispenserJS();
+        this.dispenser = new DispenserJS(this.width);
     }
 
     update(createBlock) {
         this.updateBlocks(createBlock);
+        this.dispenser.update(this.blocks.length);
     }
 
     updateBlocks(createBlock) {
@@ -141,7 +172,7 @@ class RailJS {
             }
         }
         if (createBlock) {
-            this.blocks.push(new BlockJS(80, this.blockSpeed, this.width));
+            this.blocks.push(new BlockJS(80, this.blockSpeed, this.width, this.letter));
         }
     }
 
@@ -196,7 +227,11 @@ class Game extends React.Component {
         this.handleKeyDown = this.handleKeyDown.bind(this);
         this.updateRateMS = 10;
         this.blockSpeed = 2;
-        this.railLetters = ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'];
+        // this.railLetters = ['a', 's', 'd', 'f', 'j', 'k', 'l', ';'];
+        this.railLetters = ['a', 's', 'd', 'f'];
+        this.gameOverBlockCount = 60;
+        this.blockCount = 0;
+        this.gameOver = false;
         
         this.state = {
             yPos: props.timer,
@@ -223,28 +258,28 @@ class Game extends React.Component {
         let rails = this.state.rails;
         let railLeft = 60;
         const railSpace = 80;
-        let railToKeyMap = {}
-
+        let railToKeyMap = {};
         for (let i in this.railLetters) {
+            //rail = this.railLetters
             let letter = this.railLetters[i];
-            //railToKeyMap[rails[i].value] = letter.value;
+
             rails[i] = new RailJS(i, letter, railLeft, this.railHeight, this.blockSpeed, this.props.handleScore);
             railLeft += railSpace;
         }
-        
-        // for (let i in rails) {
-        //     rails[i] = new RailJS(i, letters[i], railLeft, this.railHeight, this.blockSpeed);
-        //     railLeft += railSpace;
-        // }
+        console.log()
     }
 
     tick() {
         this.setState(state => ({
             timerCount: state.timerCount + 1,
         }));
-
-        this.updateSchema();
-        this.updateRails();
+        if (this.blockCount >= this.gameOverBlockCount) {
+            this.gameOver = true;
+        }
+        if (!this.gameOver) {
+            this.updateSchema();
+            this.updateRails();
+        }
     }
 
     updateSchema() {
@@ -255,9 +290,11 @@ class Game extends React.Component {
         let rails = this.state.rails.slice();
         let blockTrigs = this.state.schema.blockTriggers
         let blocksToCreate = 0;
+        let notesToCreate = [];
         for (let i in blockTrigs) {
             if (blockTrigs[i].value) {
                 blocksToCreate += 1;
+                this.blockCount += 1;
             }
         }
 
@@ -357,12 +394,10 @@ class Game extends React.Component {
     }
 
     render() {
-        // console.log(this.state.keyDown);
-        // for (let key in this.state.keyDown) {
-        //     if (this.state.keyDown[key]) {
-        //         console.log('key ' + key + ' pressed');
-        //     }
-        // }
+        if (this.gameOver) {
+            return (<div><br />GAME OVER <br />Go to scoreboard to submit score!</div>);
+        }
+
         return (
             <div className="game">
                 {this.renderRails()}

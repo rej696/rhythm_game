@@ -41,12 +41,22 @@ button {
 }
 
 .dispenser {
-    border: 10px solid green;
+    border: solid green;
+
+    height: 6px;
     /* height: 10px;
     color: green; */
     position: absolute;
-    margin: auto;
-    left: 20px;
+    /* margin: auto; */
+    /* left: 20px; */
+}
+
+.blooper {
+    font-family: 'arial black';
+    font-weight: bold;
+    font-size: 22px;
+    width: 30px;
+    height: 30px;
 }
 
 @keyframes nudge {

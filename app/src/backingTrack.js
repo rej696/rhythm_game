@@ -84,14 +84,15 @@ export default class Blooper extends React.Component {
 
     render() {
         return (
-            <button
+            <button className="blooper"
                 onMouseDown={this.noteClicked}
                 onMouseUp={this.noteReleased}
                 onMouseLeave={this.noteReleased}
                 >
                 <div>
-                    {this.props.note}
-                    <sub>{this.props.octave}</sub>
+                    {this.props.letter} {/*.charAt(0).toUpperCase()*/}
+                    {/* {this.props.note} */}
+                    {/* <sub>{this.props.octave}</sub> */}
                 </div>
             </button>
         )
